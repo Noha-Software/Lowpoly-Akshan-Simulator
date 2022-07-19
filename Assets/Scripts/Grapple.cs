@@ -1,3 +1,4 @@
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 public class Grapple : NetworkBehaviour
 {
-	[SerializeField] LineRenderer lineRenderer;
+	//[SerializeField] LineRenderer lineRenderer;
 	bool mouseDown;
 	[HideInInspector] public bool grappling = false;
 	PlayerController player;
@@ -21,13 +22,14 @@ public class Grapple : NetworkBehaviour
 	[SerializeField] [Range(0,1)] [Tooltip("Length of rope compared to distance to grapple point")] float length = .7f;
 	[SerializeField] bool launch = false;
 	[SerializeField] [Min(0)] float ropeLerpTime = .3f;
-
+	Vector3 grapplePoint;
+	int ropeIndex;
 	Camera cam;
 
 	private void Awake()
 	{
 		cam = Camera.main;
-		lineRenderer.positionCount = 2;
+		//lineRenderer.positionCount = 2;
 		player = GetComponent<PlayerController>();
 	}
 
@@ -49,7 +51,14 @@ public class Grapple : NetworkBehaviour
 
 	private void LateUpdate()
 	{
-		lineRenderer.SetPosition(0, transform.position);
+		//lineRenderer.SetPosition(0, transform.position);
+		RopeManager.instance.UpdatePointRequest(ropeIndex, 0, transform.position);
+	}
+
+	[TargetRpc]
+	public void SetRopeIndex(NetworkConnection conn, int i)
+	{
+		ropeIndex = i;
 	}
 
 	[Client(RequireOwnership = true)]
@@ -73,6 +82,8 @@ public class Grapple : NetworkBehaviour
 
 		if (!hit) return;
 
+		grapplePoint = hit.point;
+
 		SpringJoint2D springJoint = gameObject.AddComponent<SpringJoint2D>();
 		springJoint.autoConfigureDistance = false;
 		if (launch)
@@ -83,43 +94,50 @@ public class Grapple : NetworkBehaviour
 		}
 		else
 		{
-			springJoint.distance = Vector2.Distance(transform.position, hit.point) * length;
+			springJoint.distance = Vector2.Distance(transform.position, grapplePoint) * length;
 			springJoint.frequency = .8f;
 			springJoint.dampingRatio = 0.2f;
 		}
 		springJoint.enableCollision = true;
 		springJoint.connectedBody = hit.rigidbody;
-		springJoint.connectedAnchor = hit.transform.InverseTransformPoint(hit.point);
+		springJoint.connectedAnchor = hit.transform.InverseTransformPoint(grapplePoint);
 		springJoint.enabled = false;
 
-		//implement new rope renderer
-
-		lineRenderer.positionCount = 2;
-		lineRenderer.SetPosition(0, transform.position);
-		StartCoroutine("EnableJoint", springJoint);
-		StartCoroutine("LerpRope", hit.point);
-		lineRenderer.enabled = true;
+		Vector3[] points = new Vector3[2];
+		points[0] = transform.position;
+		points[1] = transform.position;
+		int i = RopeManager.instance.AddRopeRequest(points, .2f, base.Owner);
+		StartCoroutine(EnableJoint(springJoint));
+		StartCoroutine(LerpRope(grapplePoint, i));
 	}
 
 	[Client(RequireOwnership = true)]
 	void EndGrapple()
 	{
 		Destroy(gameObject.GetComponent<SpringJoint2D>());
-		lineRenderer.enabled = false;
-
+		//lineRenderer.enabled = false;
+		RopeManager.instance.RemoveRopeRequest(ropeIndex);
 		grappling = false;
 	}
 
-	IEnumerator LerpRope(Vector2 target)
+	IEnumerator LerpRope(Vector2 target, int i)
 	{
+		ropeIndex = i;
+		Vector3[] points = new Vector3[2];
+		points[0] = transform.position;
 		float time = 0;
 		while (time < ropeLerpTime)
 		{
-			lineRenderer.SetPosition(1, Vector2.Lerp(transform.position, target, time / ropeLerpTime));
+			points[1] = Vector2.Lerp(transform.position, target, time / ropeLerpTime);
+			RopeManager.instance.UpdatePointsRequest(i, points);
+
+			//lineRenderer.SetPosition(1, Vector2.Lerp(transform.position, target, time / ropeLerpTime));
 			time += Time.fixedDeltaTime;
 			yield return null;
 		}
-		lineRenderer.SetPosition(1, target);
+		//lineRenderer.SetPosition(1, target);
+		points[1] = target;
+		RopeManager.instance.UpdatePointsRequest(i, points);
 	}
 
 	IEnumerator EnableJoint(Joint2D joint)
@@ -133,62 +151,5 @@ public class Grapple : NetworkBehaviour
 	{
 		Gizmos.color = Color.magenta;
 		Gizmos.DrawWireSphere(transform.position, targetDistance);
-	}
-}
-
-public class RopeManager : NetworkBehaviour
-{
-	[SerializeField] Material ropeMaterial;
-	[SerializeField] List<RopeRenderer> ropes = new List<RopeRenderer>();
-	public RopeRenderer AddRope(Vector3[] points, float width)
-	{
-		GameObject rope = new GameObject();
-		GameObject ropeObj = Instantiate(rope, transform);
-		RopeRenderer ropeRenderer = new RopeRenderer(points, ropeMaterial, width, ropeObj);
-		ropeObj.AddComponent<NetworkObject>();
-		ropeObj.name = "rope_" + ropes.Count;
-		ropes.Add(ropeRenderer);
-		return ropeRenderer;
-	}
-	public void RemoveRope(RopeRenderer rope)
-	{
-		if (!ropes.Contains(rope)) return;
-		ropes.Remove(rope);
-		Destroy(rope.gameObject);
-	}
-	public void RemoveRope(int i)
-	{
-		if (i >= ropes.Count) return;
-		Destroy(ropes[i].gameObject);
-		ropes.RemoveAt(i);
-	}
-}
-
-public class RopeRenderer : MonoBehaviour
-{
-	LineRenderer lr;
-	bool init;
-	public RopeRenderer(Vector3[] points, Material material, float width, GameObject gameObject)
-	{
-		lr = gameObject.GetComponent<LineRenderer>();
-		if (lr == null)
-			lr = gameObject.AddComponent<LineRenderer>();
-
-		lr.numCapVertices = 10;
-		lr.numCornerVertices = 1;
-		lr.useWorldSpace = false;
-		lr.positionCount = points.Length;
-		lr.SetPositions(points);
-		lr.material = material;
-		lr.startWidth = width;
-		lr.endWidth = width;
-
-		init = true;
-	}
-	public void UpdatePoints(Vector3[] points)
-	{
-		if (!init) return;
-
-		lr.SetPositions(points);
 	}
 }
