@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -21,12 +20,14 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] float fallMultiplier = 2.5f;
 	[SerializeField] float lowJumpMultiplier = 2f;
 	[SerializeField] float coyoteJumpWindow = 0.2f;
+	[SerializeField] bool animate;
 	float horizontalValue;
 
-	[Header("Arrow")]
-	[SerializeField] public Transform arrow;
-	[SerializeField] [Min(0)] float arrowRotationSpeed = 500;
-	[SerializeField] [Range(0,360)] float arrowAngle;
+	[Header("Tool")]
+	//[SerializeField] public Transform toolPivot;
+	[SerializeField] public Hand hand;
+	[SerializeField] [Min(0)] float toolRotationSpeed = 500;
+	[SerializeField] [Range(0,360)] float toolAngle;
 	[SerializeField] [Min(0)] float damping = 100;
 
 	[Header("Other")]
@@ -55,7 +56,7 @@ public class PlayerController : MonoBehaviour
 		{
 			GetInputs();
 			Move(horizontalValue);
-			RotateArrow();
+			RotateTool();
 		}
 		GroundCheck();
 		Accelerate();
@@ -76,6 +77,17 @@ public class PlayerController : MonoBehaviour
 
 		if (Input.GetButtonDown("Jump"))
 			Jump();
+
+		if (Input.GetMouseButton(0))
+		{
+			if (hand.currentTool != null)
+				hand.currentTool.Use();
+		}
+
+		if (Input.GetKeyDown(KeyCode.F))
+			hand.SetTool(typeof(GrapplingGun));
+		if (Input.GetKeyDown(KeyCode.G))
+			hand.RemoveTool();
 	}
 
 	void Accelerate()
@@ -172,24 +184,24 @@ public class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Rotate the attached arrow to face the mouse
 	/// </summary>
-	void RotateArrow()
+	void RotateTool()
 	{
 		Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
 		float distance = Vector2.Distance(transform.position, mouse);
 		if (distance > 20f) distance = 20f;
 
-		arrowAngle = transform.eulerAngles.z % 360f;
-		if (arrowAngle < 0f) arrowAngle += 360f;
-		else if (arrowAngle > 360f) arrowAngle -= 360f;
+		toolAngle = transform.eulerAngles.z % 360f;
+		if (toolAngle < 0f) toolAngle += 360f;
+		else if (toolAngle > 360f) toolAngle -= 360f;
 
 		Vector2 deltaVector = (mouse - transform.position).normalized;
 
-		Quaternion forwardRotation = Quaternion.AngleAxis(arrowAngle, Vector3.forward);
+		Quaternion forwardRotation = Quaternion.AngleAxis(toolAngle, Vector3.forward);
 		Vector2 forwardDirection = forwardRotation * new Vector2(distance, 0f);
 
-		arrowAngle = Vector2.SignedAngle(deltaVector, forwardDirection);
-		arrow.rotation = Quaternion.Lerp(arrow.rotation, Quaternion.Euler(0, 0, -arrowAngle + arrowRotationSpeed * Time.fixedDeltaTime), Time.fixedDeltaTime * damping);
+		toolAngle = Vector2.SignedAngle(deltaVector, forwardDirection);
+		hand.transform.rotation = Quaternion.Lerp(hand.transform.rotation, Quaternion.Euler(0, 0, -toolAngle + toolRotationSpeed * Time.fixedDeltaTime), Time.fixedDeltaTime * damping);
 	}
 
 	public void ResetPlayer()

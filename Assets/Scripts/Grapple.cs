@@ -19,12 +19,11 @@ public class Grapple : MonoBehaviour
 	[SerializeField] bool launch = false;
 	[SerializeField] [Min(0)] float ropeLerpTime = .3f;
 	Vector3 grapplePoint;
-	int ropeIndex;
-	Camera cam;
+	//Camera cam;
 
 	private void Awake()
 	{
-		cam = Camera.main;
+		//cam = Camera.main;
 		lineRenderer.positionCount = 2;
 		player = GetComponent<PlayerController>();
 	}
@@ -50,13 +49,13 @@ public class Grapple : MonoBehaviour
 		lineRenderer.SetPosition(0, transform.position);
 	}
 
-	void StartGrapple()
+	public void StartGrapple()
 	{
 		Vector3 screenPoint = Input.mousePosition;
 		screenPoint.z = transform.position.z;
-		Vector3 worldPoint = cam.ScreenToWorldPoint(screenPoint);
+		//Vector3 worldPoint = cam.ScreenToWorldPoint(screenPoint);
 		Vector3 origin = transform.position;
-		Vector3 direction = player.arrow.GetChild(0).position - origin;
+		Vector3 direction = player.hand.transform.GetChild(0).position - origin;
 
 		RaycastHit2D hit;
 		if (targetAll)
@@ -98,7 +97,7 @@ public class Grapple : MonoBehaviour
 		lineRenderer.enabled = true;
 	}
 
-	void EndGrapple()
+	public void EndGrapple()
 	{
 		Destroy(gameObject.GetComponent<SpringJoint2D>());
 		lineRenderer.enabled = false;

@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8704329113576091303}
+  - component: {fileID: 1177187620682091304}
   m_Layer: 10
-  m_Name: ArrowPivot
+  m_Name: ToolPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,6 +33,20 @@ Transform:
   m_Father: {fileID: 8704329113676568753}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1177187620682091304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8704329113576091302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4a4c0f9eabb52c4cb91735c3a9db7c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentTool: {fileID: 0}
+  arrowSprite: {fileID: 21300000, guid: 282ae60c88b135046b671202547a56bb, type: 3}
 --- !u!1 &8704329113676568765
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,9 +162,10 @@ MonoBehaviour:
   fallMultiplier: 2.5
   lowJumpMultiplier: 2
   coyoteJumpWindow: 0.2
-  arrow: {fileID: 8704329113576091303}
-  arrowRotationSpeed: 250
-  arrowAngle: 0
+  animate: 0
+  toolPivot: {fileID: 0}
+  toolRotationSpeed: 500
+  toolAngle: 0
   damping: 10
   isDead: 0
   lostGame: 0
@@ -385,7 +401,7 @@ GameObject:
   - component: {fileID: 8704329114000751335}
   - component: {fileID: 8704329114000751320}
   m_Layer: 10
-  m_Name: Arrow
+  m_Name: ToolHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -398,14 +414,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8704329114000751334}
-  m_LocalRotation: {x: -0, y: -0, z: 1, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.65, y: 0, z: 0}
   m_LocalScale: {x: 0.06, y: 0.09, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8704329113576091303}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8704329114000751320
 SpriteRenderer:
   m_ObjectHideFlags: 0
