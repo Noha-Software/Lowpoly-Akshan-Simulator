@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8704329113576091303}
-  - component: {fileID: 6572732401945782608}
   m_Layer: 10
   m_Name: ArrowPivot
   m_TagString: Untagged
@@ -33,48 +32,6 @@ Transform:
   m_Father: {fileID: 8704329113676568753}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6572732401945782608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8704329113576091302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 4222686302860881489}
-  _networkObjectCache: {fileID: 0}
-  _synchronizeParent: 0
-  _packing:
-    Position: 1
-    Rotation: 1
-    Scale: 0
-  _interpolation: 2
-  _extrapolation: 2
-  _enableTeleport: 0
-  _teleportThreshold: 1
-  _clientAuthoritative: 1
-  _sendToOwner: 1
-  _interval: 1
-  _synchronizePosition: 1
-  _positionSnapping:
-    X: 0
-    Y: 0
-    Z: 0
-  _synchronizeRotation: 1
-  _rotationSnapping:
-    X: 0
-    Y: 0
-    Z: 0
-  _synchronizeScale: 1
-  _scaleSnapping:
-    X: 0
-    Y: 0
-    Z: 0
 --- !u!1 &8704329113676568765
 GameObject:
   m_ObjectHideFlags: 0
@@ -88,12 +45,10 @@ GameObject:
   - component: {fileID: 8704329113676568754}
   - component: {fileID: 8704329113676568758}
   - component: {fileID: 758233141653749922}
-  - component: {fileID: 4222686302860881489}
   - component: {fileID: 8704329113676568767}
   - component: {fileID: 8704329113676568766}
   - component: {fileID: 8704329113676568755}
   - component: {fileID: 8704329113676568757}
-  - component: {fileID: 6006994440721326579}
   m_Layer: 10
   m_Name: Player
   m_TagString: Untagged
@@ -182,9 +137,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95b9f825f343ef64695884ad4e4e423f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 4222686302860881489}
-  _networkObjectCache: {fileID: 4222686302860881489}
   standingCollider: {fileID: 8704329113676568767}
   groundCollider: {fileID: 8704329113954396718}
   groundLayer:
@@ -213,9 +165,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29e8ab706c7ffc04eae2b3e936d6b3ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: 4222686302860881489}
-  _networkObjectCache: {fileID: 4222686302860881489}
   lineRenderer: {fileID: 8704329113676568757}
   grappling: 0
   targetAll: 0
@@ -238,39 +187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eff10908868392744b955d597a87d4b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
-  _addedNetworkObject: {fileID: 4222686302860881489}
-  _networkObjectCache: {fileID: 4222686302860881489}
---- !u!114 &4222686302860881489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8704329113676568765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _networkBehaviours:
-  - {fileID: 8704329113676568754}
-  - {fileID: 8704329113676568758}
-  - {fileID: 758233141653749922}
-  - {fileID: 6006994440721326579}
-  SceneTransformProperties:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
-  _isNetworked: 1
-  _isGlobal: 0
-  _hasParentNetworkObjectAtEdit: 0
-  NetworkObserver: {fileID: 0}
-  _prefabId: -1
-  _scenePathHash: 0
-  _sceneId: 0
-  _sceneNetworkObjects:
-  - {fileID: 4222686302860881489}
 --- !u!58 &8704329113676568767
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -427,48 +343,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &6006994440721326579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8704329113676568765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 3
-  _addedNetworkObject: {fileID: 4222686302860881489}
-  _networkObjectCache: {fileID: 4222686302860881489}
-  _synchronizeParent: 0
-  _packing:
-    Position: 1
-    Rotation: 1
-    Scale: 0
-  _interpolation: 2
-  _extrapolation: 2
-  _enableTeleport: 0
-  _teleportThreshold: 1
-  _clientAuthoritative: 1
-  _sendToOwner: 1
-  _interval: 1
-  _synchronizePosition: 1
-  _positionSnapping:
-    X: 0
-    Y: 0
-    Z: 0
-  _synchronizeRotation: 1
-  _rotationSnapping:
-    X: 0
-    Y: 0
-    Z: 0
-  _synchronizeScale: 1
-  _scaleSnapping:
-    X: 0
-    Y: 0
-    Z: 0
 --- !u!1 &8704329113954396717
 GameObject:
   m_ObjectHideFlags: 0
@@ -510,7 +384,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8704329114000751335}
   - component: {fileID: 8704329114000751320}
-  - component: {fileID: 4499393864496764128}
   m_Layer: 10
   m_Name: Arrow
   m_TagString: Untagged
@@ -585,45 +458,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4499393864496764128
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8704329114000751334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 4222686302860881489}
-  _networkObjectCache: {fileID: 0}
-  _synchronizeParent: 0
-  _packing:
-    Position: 1
-    Rotation: 1
-    Scale: 0
-  _interpolation: 2
-  _extrapolation: 2
-  _enableTeleport: 0
-  _teleportThreshold: 1
-  _clientAuthoritative: 1
-  _sendToOwner: 1
-  _interval: 1
-  _synchronizePosition: 1
-  _positionSnapping:
-    X: 0
-    Y: 0
-    Z: 0
-  _synchronizeRotation: 1
-  _rotationSnapping:
-    X: 0
-    Y: 0
-    Z: 0
-  _synchronizeScale: 1
-  _scaleSnapping:
-    X: 0
-    Y: 0
-    Z: 0

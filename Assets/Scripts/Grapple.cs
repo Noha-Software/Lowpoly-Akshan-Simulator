@@ -1,14 +1,10 @@
-using FishNet.Connection;
-using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using FishNet.Transporting;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grapple : NetworkBehaviour
+public class Grapple : MonoBehaviour
 {
-	//[SerializeField] LineRenderer lineRenderer;
+	[SerializeField] LineRenderer lineRenderer;
 	bool mouseDown;
 	[HideInInspector] public bool grappling = false;
 	PlayerController player;
@@ -29,7 +25,7 @@ public class Grapple : NetworkBehaviour
 	private void Awake()
 	{
 		cam = Camera.main;
-		//lineRenderer.positionCount = 2;
+		lineRenderer.positionCount = 2;
 		player = GetComponent<PlayerController>();
 	}
 
@@ -51,17 +47,9 @@ public class Grapple : NetworkBehaviour
 
 	private void LateUpdate()
 	{
-		//lineRenderer.SetPosition(0, transform.position);
-		RopeManager.instance.UpdatePointRequest(ropeIndex, 0, transform.position);
+		lineRenderer.SetPosition(0, transform.position);
 	}
 
-	[TargetRpc]
-	public void SetRopeIndex(NetworkConnection conn, int i)
-	{
-		ropeIndex = i;
-	}
-
-	[Client(RequireOwnership = true)]
 	void StartGrapple()
 	{
 		Vector3 screenPoint = Input.mousePosition;
@@ -103,41 +91,30 @@ public class Grapple : NetworkBehaviour
 		springJoint.connectedAnchor = hit.transform.InverseTransformPoint(grapplePoint);
 		springJoint.enabled = false;
 
-		Vector3[] points = new Vector3[2];
-		points[0] = transform.position;
-		points[1] = transform.position;
-		int i = RopeManager.instance.AddRopeRequest(points, .2f, base.Owner);
+		lineRenderer.positionCount = 2;
+		lineRenderer.SetPosition(0, transform.position);
 		StartCoroutine(EnableJoint(springJoint));
-		StartCoroutine(LerpRope(grapplePoint, i));
+		StartCoroutine(LerpRope(grapplePoint));
+		lineRenderer.enabled = true;
 	}
 
-	[Client(RequireOwnership = true)]
 	void EndGrapple()
 	{
 		Destroy(gameObject.GetComponent<SpringJoint2D>());
-		//lineRenderer.enabled = false;
-		RopeManager.instance.RemoveRopeRequest(ropeIndex);
+		lineRenderer.enabled = false;
 		grappling = false;
 	}
 
-	IEnumerator LerpRope(Vector2 target, int i)
+	IEnumerator LerpRope(Vector2 target)
 	{
-		ropeIndex = i;
-		Vector3[] points = new Vector3[2];
-		points[0] = transform.position;
 		float time = 0;
 		while (time < ropeLerpTime)
 		{
-			points[1] = Vector2.Lerp(transform.position, target, time / ropeLerpTime);
-			RopeManager.instance.UpdatePointsRequest(i, points);
-
-			//lineRenderer.SetPosition(1, Vector2.Lerp(transform.position, target, time / ropeLerpTime));
+			lineRenderer.SetPosition(1, Vector2.Lerp(transform.position, target, time / ropeLerpTime));
 			time += Time.fixedDeltaTime;
 			yield return null;
 		}
-		//lineRenderer.SetPosition(1, target);
-		points[1] = target;
-		RopeManager.instance.UpdatePointsRequest(i, points);
+		lineRenderer.SetPosition(1, target);
 	}
 
 	IEnumerator EnableJoint(Joint2D joint)

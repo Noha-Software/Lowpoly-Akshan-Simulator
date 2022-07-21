@@ -1,9 +1,8 @@
-﻿using FishNet.Object;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraScript : NetworkBehaviour
+public class CameraScript : MonoBehaviour
 {
     Camera cam;
 
@@ -17,7 +16,6 @@ public class CameraScript : NetworkBehaviour
         Follow();
     }
 
-    [Client(RequireOwnership = true)]
     void Follow()
     {
         Vector3 pos = cam.transform.position;

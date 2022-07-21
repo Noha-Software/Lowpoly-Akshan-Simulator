@@ -1,10 +1,9 @@
-﻿using FishNet.Object;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : NetworkBehaviour
+public class PlayerController : MonoBehaviour
 {
 	Rigidbody2D rb;
 	Animator animator;
@@ -52,25 +51,16 @@ public class PlayerController : NetworkBehaviour
 
 	void FixedUpdate()
 	{
-		if (!base.IsOwner)
-		{
-			return;
-		}
-
 		if (!isPaused)
 		{
 			GetInputs();
-
-			GroundCheck();
-
 			Move(horizontalValue);
-
 			RotateArrow();
 		}
+		GroundCheck();
 		Accelerate();
 	}
-	
-	[Client(RequireOwnership = true)]
+
 	void GetInputs()
 	{
 		if (!CanMove())
@@ -88,7 +78,6 @@ public class PlayerController : NetworkBehaviour
 			Jump();
 	}
 
-	[Client(RequireOwnership = true)]
 	void Accelerate()
 	{
 		if (rb.velocity.y < 0)
@@ -148,7 +137,6 @@ public class PlayerController : NetworkBehaviour
 		coyoteJump = false;
 	}
 
-	[Client(RequireOwnership = true)]
 	void Jump()
 	{
 		//if on ground, jump
@@ -168,7 +156,6 @@ public class PlayerController : NetworkBehaviour
 		}
 	}
 
-	[Client(RequireOwnership = true)]
 	void Move(float dir)
 	{
 		float xVal = dir * speed * 10 * Time.fixedDeltaTime;
@@ -185,7 +172,6 @@ public class PlayerController : NetworkBehaviour
 	/// <summary>
 	/// Rotate the attached arrow to face the mouse
 	/// </summary>
-	[Client(RequireOwnership = true)]
 	void RotateArrow()
 	{
 		Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
