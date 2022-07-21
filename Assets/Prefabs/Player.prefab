@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8704329113576091303}
   - component: {fileID: 1177187620682091304}
   m_Layer: 10
-  m_Name: ToolPivot
+  m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4a4c0f9eabb52c4cb91735c3a9db7c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentTool: {fileID: 0}
+  CurrentWeapon: {fileID: 0}
+  WeaponName: 
   arrowSprite: {fileID: 21300000, guid: 282ae60c88b135046b671202547a56bb, type: 3}
 --- !u!1 &8704329113676568765
 GameObject:
@@ -163,10 +164,10 @@ MonoBehaviour:
   lowJumpMultiplier: 2
   coyoteJumpWindow: 0.2
   animate: 0
-  toolPivot: {fileID: 0}
-  toolRotationSpeed: 500
-  toolAngle: 0
-  damping: 10
+  hand: {fileID: 1177187620682091304}
+  cursorAngle: 0
+  damping: 20
+  weapon: {fileID: 11400000, guid: 12e89571eec1fed43a746b413938ab0b, type: 2}
   isDead: 0
   lostGame: 0
 --- !u!114 &8704329113676568758
@@ -181,13 +182,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29e8ab706c7ffc04eae2b3e936d6b3ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lineRenderer: {fileID: 8704329113676568757}
   grappling: 0
+  canGrapple: 1
   targetAll: 0
   targetLayer:
     serializedVersion: 2
     m_Bits: 128
   targetDistance: 10
+  lineRenderer: {fileID: 8704329113676568757}
   length: 0.7
   launch: 1
   ropeLerpTime: 0.2
@@ -401,7 +403,7 @@ GameObject:
   - component: {fileID: 8704329114000751335}
   - component: {fileID: 8704329114000751320}
   m_Layer: 10
-  m_Name: ToolHolder
+  m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -415,8 +417,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8704329114000751334}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.65, y: 0, z: 0}
-  m_LocalScale: {x: 0.06, y: 0.09, z: 1}
+  m_LocalPosition: {x: 0.8, y: 0, z: 0}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8704329113576091303}

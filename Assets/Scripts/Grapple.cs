@@ -1,12 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Grapple : MonoBehaviour
 {
-	[SerializeField] LineRenderer lineRenderer;
-	bool mouseDown;
-	[HideInInspector] public bool grappling = false;
+	public bool grappling = false;
+	public bool canGrapple = true;
 	PlayerController player;
 
 	[Header("Targeting")]
@@ -15,6 +13,7 @@ public class Grapple : MonoBehaviour
 	[SerializeField] [Min(1)] [Tooltip("Maximum distance to grapple")] int targetDistance = 15;
 
 	[Header("Rope")]
+	[SerializeField] LineRenderer lineRenderer;
 	[SerializeField] [Range(0,1)] [Tooltip("Length of rope compared to distance to grapple point")] float length = .7f;
 	[SerializeField] bool launch = false;
 	[SerializeField] [Min(0)] float ropeLerpTime = .3f;
@@ -28,31 +27,39 @@ public class Grapple : MonoBehaviour
 		player = GetComponent<PlayerController>();
 	}
 
+	
 	private void FixedUpdate()
 	{
-		mouseDown = Input.GetMouseButtonDown(0);
-		if (mouseDown)
+		if (Input.GetButtonDown("Fire2"))
+			ToggleGrapple();
+	}
+	
+	private void LateUpdate()
+	{
+		if (grappling)
+			lineRenderer.SetPosition(0, transform.position);
+	}
+
+	public void ToggleGrapple()
+	{
+		if (!canGrapple)
+			return;
+		if (!grappling)
 		{
-			if (!grappling)
-			{
-				StartGrapple();
-			}
-			else
-			{
-				EndGrapple();
-			}
+			StartGrapple();
+		}
+		else
+		{
+			EndGrapple();
 		}
 	}
 
-	private void LateUpdate()
+	void StartGrapple()
 	{
-		lineRenderer.SetPosition(0, transform.position);
-	}
+		canGrapple = false;
 
-	public void StartGrapple()
-	{
-		Vector3 screenPoint = Input.mousePosition;
-		screenPoint.z = transform.position.z;
+		//Vector3 screenPoint = Input.mousePosition;
+		//screenPoint.z = transform.position.z;
 		//Vector3 worldPoint = cam.ScreenToWorldPoint(screenPoint);
 		Vector3 origin = transform.position;
 		Vector3 direction = player.hand.transform.GetChild(0).position - origin;
@@ -67,7 +74,11 @@ public class Grapple : MonoBehaviour
 			hit = Physics2D.Raycast(origin, direction, targetDistance, targetLayer);
 		}
 
-		if (!hit) return;
+		if (!hit)
+		{
+			canGrapple = true;
+			return;
+		}
 
 		grapplePoint = hit.point;
 
@@ -95,17 +106,24 @@ public class Grapple : MonoBehaviour
 		StartCoroutine(EnableJoint(springJoint));
 		StartCoroutine(LerpRope(grapplePoint));
 		lineRenderer.enabled = true;
+		grappling = true;
 	}
 
-	public void EndGrapple()
+	void EndGrapple()
 	{
+		canGrapple = false;
+
 		Destroy(gameObject.GetComponent<SpringJoint2D>());
 		lineRenderer.enabled = false;
 		grappling = false;
+
+		canGrapple = true;
 	}
 
 	IEnumerator LerpRope(Vector2 target)
 	{
+		canGrapple = false;
+
 		float time = 0;
 		while (time < ropeLerpTime)
 		{
@@ -114,13 +132,18 @@ public class Grapple : MonoBehaviour
 			yield return null;
 		}
 		lineRenderer.SetPosition(1, target);
+
+		canGrapple = true;
 	}
 
 	IEnumerator EnableJoint(Joint2D joint)
 	{
+		canGrapple = false;
+
 		yield return new WaitForSeconds(ropeLerpTime);
 		joint.enabled = true;
-		grappling = true;
+
+		canGrapple = true;
 	}
 
 	private void OnDrawGizmosSelected()

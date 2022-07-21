@@ -23,14 +23,13 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] bool animate;
 	float horizontalValue;
 
-	[Header("Tool")]
-	//[SerializeField] public Transform toolPivot;
-	[SerializeField] public Hand hand;
-	[SerializeField] [Min(0)] float toolRotationSpeed = 500;
-	[SerializeField] [Range(0,360)] float toolAngle;
+	[Header("Cursor")]
+	public Hand hand;
+	[Range(-180,180)] public float cursorAngle;
 	[SerializeField] [Min(0)] float damping = 100;
 
 	[Header("Other")]
+	[SerializeField] Weapon weapon;
 	public bool isDead = false;
 	public bool lostGame = false;
 	bool isGrounded = false;
@@ -48,6 +47,8 @@ public class PlayerController : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		grapple = GetComponent<Grapple>();
+
+		hand.SetWeapon(weapon);
 	}
 
 	void FixedUpdate()
@@ -56,7 +57,7 @@ public class PlayerController : MonoBehaviour
 		{
 			GetInputs();
 			Move(horizontalValue);
-			RotateTool();
+			RotateCursor();
 		}
 		GroundCheck();
 		Accelerate();
@@ -64,6 +65,15 @@ public class PlayerController : MonoBehaviour
 
 	void GetInputs()
 	{
+		if (Input.GetButtonDown("Fire1"))
+			hand.FireWeapon();
+
+		if (Input.GetButtonDown("Equip"))
+			hand.EquipWeapon();
+
+		if (Input.GetButtonDown("Unequip"))
+			hand.UnequipWeapon();
+
 		if (!CanMove())
 		{
 			horizontalValue = 0f;
@@ -77,17 +87,6 @@ public class PlayerController : MonoBehaviour
 
 		if (Input.GetButtonDown("Jump"))
 			Jump();
-
-		if (Input.GetMouseButton(0))
-		{
-			if (hand.currentTool != null)
-				hand.currentTool.Use();
-		}
-
-		if (Input.GetKeyDown(KeyCode.F))
-			hand.SetTool(typeof(GrapplingGun));
-		if (Input.GetKeyDown(KeyCode.G))
-			hand.RemoveTool();
 	}
 
 	void Accelerate()
@@ -184,31 +183,33 @@ public class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Rotate the attached arrow to face the mouse
 	/// </summary>
-	void RotateTool()
+	void RotateCursor()
 	{
 		Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
 		float distance = Vector2.Distance(transform.position, mouse);
-		if (distance > 20f) distance = 20f;
 
-		toolAngle = transform.eulerAngles.z % 360f;
-		if (toolAngle < 0f) toolAngle += 360f;
-		else if (toolAngle > 360f) toolAngle -= 360f;
+		float angle = transform.rotation.eulerAngles.z % 360f;
+		if (angle < 0f) angle += 360f;
+		else if (angle > 360f) angle -= 360f;
 
 		Vector2 deltaVector = (mouse - transform.position).normalized;
 
-		Quaternion forwardRotation = Quaternion.AngleAxis(toolAngle, Vector3.forward);
+		Quaternion forwardRotation = Quaternion.AngleAxis(angle, Vector3.forward);
 		Vector2 forwardDirection = forwardRotation * new Vector2(distance, 0f);
 
-		toolAngle = Vector2.SignedAngle(deltaVector, forwardDirection);
-		hand.transform.rotation = Quaternion.Lerp(hand.transform.rotation, Quaternion.Euler(0, 0, -toolAngle + toolRotationSpeed * Time.fixedDeltaTime), Time.fixedDeltaTime * damping);
-	}
+		cursorAngle = Vector2.SignedAngle(deltaVector, forwardDirection);
+		hand.transform.rotation = Quaternion.Lerp(hand.transform.rotation, Quaternion.Euler(0, 0, -cursorAngle), Time.fixedDeltaTime * damping);
 
-	public void ResetPlayer()
-	{
-		horizontalValue = 0f;
+		if (cursorAngle > 90 || cursorAngle < -90)
+		{
+			hand.transform.GetChild(0).GetComponent<SpriteRenderer>().flipY = true;
+		}
+		else
+		{
+			hand.transform.GetChild(0).GetComponent<SpriteRenderer>().flipY = false;
+		}
 	}
-
 
 	private void OnDrawGizmosSelected()
 	{

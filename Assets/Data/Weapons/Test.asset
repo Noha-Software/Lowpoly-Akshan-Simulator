@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ef4c05aa1b00848904f07beb690c72, type: 3}
+  m_Name: Test
+  m_EditorClassIdentifier: 
+  name: Test Weapon
+  description: This is a test weapon
+  texture: {fileID: 21300000, guid: d29b4bc22d9dafb4e9bab3f95c991a6d, type: 3}
+  damage: 10
+  fireRate: 360
+  magazineSize: 30
+  reloadRate: 1
+  projectilePrefab: {fileID: 8727579417451963477, guid: ab67cbf1314de7a40b5dde9cef1fbe6b, type: 3}
+  projectileSpeed: 100
