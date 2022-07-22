@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Hand : MonoBehaviour
@@ -55,7 +56,22 @@ public class Hand : MonoBehaviour
 	{
 		if (CurrentWeapon == null || !equipped)
 			return;
-		CurrentWeapon.Fire((weaponHolder.position - transform.parent.position).normalized, weaponHolder.position, -GetComponentInParent<PlayerController>().cursorAngle);
+		CurrentWeapon.Fire((weaponHolder.position - transform.parent.position).normalized, weaponHolder.position, -GetComponentInParent<PlayerController>().cursorAngle, this);
 		Debug.Log("Fired " + WeaponName);
+	}
+
+	public IEnumerator FireCooldown(int fireRate)
+	{
+		CurrentWeapon.canShoot = false;
+		yield return new WaitForSeconds(60 / fireRate);
+		CurrentWeapon.canShoot = true;
+	}
+
+	public IEnumerator Reload(float reloadRate)
+	{
+		CurrentWeapon.canShoot = false;
+		Debug.Log("Reloading...");
+		yield return new WaitForSeconds(reloadRate);
+		CurrentWeapon.canShoot = true;
 	}
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [System.Serializable]
@@ -10,8 +11,8 @@ public class Weapon : ScriptableObject
 	public Sprite texture;
 
 	[Header("Stats")]
-	[Range(1,100)] public int damage;
-	[Tooltip("Rounds per minute")] [Min(1)] public float fireRate;
+	[Range(1, 100)] public int damage;
+	[Tooltip("Rounds per minute")] [Min(1)] public int fireRate;
 	[Min(1)] public int magazineSize;
 	[Tooltip("Seconds")] [Min(0)] public float reloadRate;
 	//TODO: implement critical hits
@@ -20,11 +21,24 @@ public class Weapon : ScriptableObject
 	public Transform projectilePrefab;
 	public float projectileSpeed;
 
-	public void Fire(Vector3 direction, Vector3 position, float angle)
+	[Header("Other")]
+	public bool canShoot = true;
+	int roundsUsed = 0;
+
+	public void Fire(Vector3 direction, Vector3 position, float angle, Hand hand)
 	{
+		if (!canShoot) return;
+		if (roundsUsed >= magazineSize)
+		{
+			hand.StartCoroutine(hand.Reload(reloadRate));
+			roundsUsed = 0;
+			return;
+		}
 		Transform projectileTransform = Instantiate(projectilePrefab, position, Quaternion.identity);
 		Projectile projectile = projectileTransform.GetComponent<Projectile>();
 		projectile.Initialise(direction, projectileSpeed);
 		projectileTransform.rotation = Quaternion.Euler(0, 0, angle);
+		roundsUsed++;
+		hand.StartCoroutine(hand.FireCooldown(fireRate));
 	}
 }
