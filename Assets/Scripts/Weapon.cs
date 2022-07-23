@@ -15,15 +15,17 @@ public class Weapon : ScriptableObject
 	[Tooltip("Rounds per minute")] [Min(1)] public int fireRate;
 	[Min(1)] public int magazineSize;
 	[Tooltip("Seconds")] [Min(0)] public float reloadRate;
+	[Tooltip("Can the fire button be held down to fire automatically?")] public bool automatic = true;
 	//TODO: implement critical hits
 
 	[Header("Projectile")]
 	public Transform projectilePrefab;
 	public float projectileSpeed;
+	[Tooltip("Position of muzzle")] public Hand.MuzzleType muzzleType;
 
 	[Header("Other")]
-	public bool canShoot = true;
-	int roundsUsed = 0;
+	[HideInInspector] public bool canShoot = true;
+	[HideInInspector] public int roundsUsed = 0;
 
 	public void Fire(Vector3 direction, Vector3 position, float angle, Hand hand)
 	{

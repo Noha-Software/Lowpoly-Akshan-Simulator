@@ -6,12 +6,15 @@ public class Projectile : MonoBehaviour
 	Vector3 direction;
 	float speed;
 	bool init;
+	Collider2D trigger;
     public void Initialise(Vector3 direction, float speed)
 	{
 		this.direction = direction;
 		this.speed = speed;
 		StartCoroutine(BulletTimeout());
 		init = true;
+		trigger = GetComponent<Collider2D>();
+		trigger.isTrigger = true;
 	}
 
 	private void FixedUpdate()
@@ -23,6 +26,18 @@ public class Projectile : MonoBehaviour
 	IEnumerator BulletTimeout()
 	{
 		yield return new WaitForSeconds(2f);
+		Destroy(gameObject);
+	}
+
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		PlayerController player = collision.GetComponent<PlayerController>();
+		if (player != null)
+		{
+			Debug.Log("Player hit!");
+			//deal damage
+		}
+
 		Destroy(gameObject);
 	}
 }

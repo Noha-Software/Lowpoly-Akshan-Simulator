@@ -65,8 +65,16 @@ public class PlayerController : MonoBehaviour
 
 	void GetInputs()
 	{
-		if (Input.GetButtonDown("Fire1"))
-			hand.FireWeapon();
+		if (hand.isAutomatic)
+		{
+			if (Input.GetButton("Fire1"))
+				hand.FireWeapon();
+		}
+		else
+		{
+			if (Input.GetButtonDown("Fire1"))
+				hand.FireWeapon();
+		}
 
 		if (Input.GetButtonDown("Equip"))
 			hand.EquipWeapon();

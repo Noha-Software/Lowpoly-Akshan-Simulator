@@ -10,6 +10,13 @@ public class Hand : MonoBehaviour
 	SpriteRenderer spriteRenderer;
 
 	bool equipped = false;
+	public bool isAutomatic;
+
+	public enum MuzzleType
+	{
+		None,
+		PistolMuzzle
+	}
 
 	private void Awake()
 	{
@@ -21,6 +28,7 @@ public class Hand : MonoBehaviour
 	{
 		CurrentWeapon = weapon;
 		WeaponName = CurrentWeapon.name;
+		isAutomatic = weapon.automatic;
 		Debug.Log("You have set " + WeaponName + " as the current weapon");
 	}
 
@@ -31,6 +39,7 @@ public class Hand : MonoBehaviour
 		UnequipWeapon();
 		CurrentWeapon = null;
 		WeaponName = null;
+		isAutomatic = false;
 		Debug.Log("You have removed the current weapon.");
 	}
 
@@ -39,6 +48,7 @@ public class Hand : MonoBehaviour
 		if (CurrentWeapon == null || equipped)
 			return;
 		spriteRenderer.sprite = CurrentWeapon.texture;
+		CurrentWeapon.roundsUsed = 0;
 		equipped = true;
 		Debug.Log("You have equipped the current weapon.");
 	}
@@ -56,14 +66,29 @@ public class Hand : MonoBehaviour
 	{
 		if (CurrentWeapon == null || !equipped)
 			return;
-		CurrentWeapon.Fire((weaponHolder.position - transform.parent.position).normalized, weaponHolder.position, -GetComponentInParent<PlayerController>().cursorAngle, this);
+
+		Vector2 shootPoint;
+		switch (CurrentWeapon.muzzleType)
+		{
+			case MuzzleType.None:
+				shootPoint = weaponHolder.position;
+				break;
+			case MuzzleType.PistolMuzzle:
+				shootPoint = weaponHolder.GetChild(0).position;
+				break;
+			default:
+				shootPoint = weaponHolder.position;
+				break;
+		}
+
+		CurrentWeapon.Fire((weaponHolder.position - transform.parent.position).normalized, shootPoint, -GetComponentInParent<PlayerController>().cursorAngle, this);
 		Debug.Log("Fired " + WeaponName);
 	}
 
-	public IEnumerator FireCooldown(int fireRate)
+	public IEnumerator FireCooldown(float fireRate)
 	{
 		CurrentWeapon.canShoot = false;
-		yield return new WaitForSeconds(60 / fireRate);
+		yield return new WaitForSeconds(60f / fireRate);
 		CurrentWeapon.canShoot = true;
 	}
 
