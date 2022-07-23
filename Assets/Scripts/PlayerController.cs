@@ -30,11 +30,12 @@ public class PlayerController : MonoBehaviour
 
 	[Header("Other")]
 	[SerializeField] Weapon weapon;
-	public bool isDead = false;
-	public bool lostGame = false;
+	[SerializeField] int maxHealth = 100;
 	bool isGrounded = false;
 	bool coyoteJump;
 	bool isPaused;
+
+	public int Health { get; private set; }
 
 	private void OnApplicationFocus(bool focus)
 	{
@@ -80,7 +81,8 @@ public class PlayerController : MonoBehaviour
 			hand.EquipWeapon();
 
 		if (Input.GetButtonDown("Unequip"))
-			hand.UnequipWeapon();
+			Damage(maxHealth);
+			//hand.UnequipWeapon();
 
 		if (!CanMove())
 		{
@@ -115,10 +117,6 @@ public class PlayerController : MonoBehaviour
 	public bool CanMove()
 	{
 		bool can = true;
-		if (isDead)
-			can = false;
-		if (lostGame)
-			can = false;
 		if (grapple.grappling)
 			can = false;
 
@@ -217,6 +215,34 @@ public class PlayerController : MonoBehaviour
 		{
 			hand.transform.GetChild(0).GetComponent<SpriteRenderer>().flipY = false;
 		}
+	}
+
+	public void Damage(int dmg)
+	{
+		Health -= dmg;
+		if (Health <= 0)
+			Die();
+	}
+
+	public void Heal(int amount)
+	{
+		if (Health + amount >= maxHealth)
+			Health = maxHealth;
+		else
+			Health += amount;
+	}
+
+	void Die()
+	{
+		Debug.Log("YOU DIED");
+		ResetPlayer();
+	}
+
+	void ResetPlayer()
+	{
+		transform.position = Vector3.zero;
+		Health = maxHealth;
+		hand.UnequipWeapon();
 	}
 
 	private void OnDrawGizmosSelected()

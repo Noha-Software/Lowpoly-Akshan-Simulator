@@ -38,7 +38,7 @@ public class Weapon : ScriptableObject
 		}
 		Transform projectileTransform = Instantiate(projectilePrefab, position, Quaternion.identity);
 		Projectile projectile = projectileTransform.GetComponent<Projectile>();
-		projectile.Initialise(direction, projectileSpeed);
+		projectile.Initialise(direction, projectileSpeed, damage);
 		projectileTransform.rotation = Quaternion.Euler(0, 0, angle);
 		roundsUsed++;
 		hand.StartCoroutine(hand.FireCooldown(fireRate));

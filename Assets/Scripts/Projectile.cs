@@ -5,12 +5,14 @@ public class Projectile : MonoBehaviour
 {
 	Vector3 direction;
 	float speed;
+	int damage;
 	bool init;
 	Collider2D trigger;
-    public void Initialise(Vector3 direction, float speed)
+	public void Initialise(Vector3 direction, float speed, int damage)
 	{
 		this.direction = direction;
 		this.speed = speed;
+		this.damage = damage;
 		StartCoroutine(BulletTimeout());
 		init = true;
 		trigger = GetComponent<Collider2D>();
@@ -35,7 +37,7 @@ public class Projectile : MonoBehaviour
 		if (player != null)
 		{
 			Debug.Log("Player hit!");
-			//deal damage
+			player.Damage(damage);
 		}
 
 		Destroy(gameObject);
