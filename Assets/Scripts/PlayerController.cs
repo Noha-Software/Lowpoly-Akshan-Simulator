@@ -97,8 +97,7 @@ public class PlayerController : MonoBehaviour
 			hand.EquipWeapon();
 
 		if (Input.GetButtonDown("Unequip"))
-			Damage(10);
-			//hand.UnequipWeapon();
+			hand.UnequipWeapon();
 
 		if (!CanMove())
 		{
