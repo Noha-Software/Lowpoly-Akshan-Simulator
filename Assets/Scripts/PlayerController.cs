@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
 	Rigidbody2D rb;
 	Animator animator;
 	Grapple grapple;
+	SpriteRenderer spriteRenderer;
 
 	[Header("Detection")]
 	[SerializeField] Collider2D standingCollider;
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
 	bool isGrounded = false;
 	bool coyoteJump;
 	bool isPaused;
+	Color originalColor;
 
 	public int Health { get; private set; }
 
@@ -51,8 +53,10 @@ public class PlayerController : MonoBehaviour
 		//Get 2D RigidBody and Animator
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
 
 		Health = maxHealth;
+		originalColor = spriteRenderer.color;
 
 		healthBar.Initialise(Color.white, Color.red, maxHealth);
 		healthBar.SetValue(maxHealth);
@@ -233,8 +237,31 @@ public class PlayerController : MonoBehaviour
 	{
 		Health -= dmg;
 		healthBar.SetValue(Health);
+		StopCoroutine("Flash");
+		spriteRenderer.color = originalColor;
+		StartCoroutine(Flash(Color.red, .5f));
 		if (Health <= 0)
 			Die();
+	}
+
+	IEnumerator Flash(Color color, float t)
+	{
+		float time = 0;
+		while (time < t/2)
+		{
+			spriteRenderer.color = Color.Lerp(spriteRenderer.color, color, time / (t / 2));
+			time += Time.deltaTime;
+			yield return null;
+		}
+		spriteRenderer.color = color;
+		time = 0;
+		while (time < t/2)
+		{
+			spriteRenderer.color = Color.Lerp(spriteRenderer.color, originalColor, time / (t / 2));
+			time += Time.deltaTime;
+			yield return null;
+		}
+		spriteRenderer.color = originalColor;
 	}
 
 	public void Heal(int amount)
@@ -244,6 +271,7 @@ public class PlayerController : MonoBehaviour
 		else
 			Health += amount;
 		healthBar.SetValue(Health);
+		StartCoroutine(Flash(Color.green, 1f));
 	}
 
 	void Die()
@@ -254,6 +282,10 @@ public class PlayerController : MonoBehaviour
 
 	void ResetPlayer()
 	{
+		if (grapple != null)
+		{
+			if (grapple.grappling) grapple.ToggleGrapple();
+		}
 		transform.position = Vector3.zero;
 		Health = maxHealth;
 		healthBar.SetValue(maxHealth);
