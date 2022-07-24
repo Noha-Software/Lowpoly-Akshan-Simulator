@@ -15,13 +15,15 @@ MonoBehaviour:
   name: Test Weapon
   description: This is a test weapon
   texture: {fileID: 21300000, guid: d29b4bc22d9dafb4e9bab3f95c991a6d, type: 3}
-  damage: 52
+  damage: 25
   fireRate: 360
   magazineSize: 12
   reloadRate: 1
   automatic: 1
+  criticalChance: 35
+  criticalDamage: 200
   projectilePrefab: {fileID: 8727579417451963477, guid: ab67cbf1314de7a40b5dde9cef1fbe6b, type: 3}
   projectileSpeed: 20
   muzzleType: 1
   canShoot: 1
-  roundsUsed: 4
+  roundsUsed: 1

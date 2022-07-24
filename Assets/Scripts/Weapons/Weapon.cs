@@ -17,7 +17,8 @@ namespace Kevlaris.Weapons
 		[Min(1)] public int magazineSize;
 		[Tooltip("Seconds")] [Min(0)] public float reloadRate;
 		[Tooltip("Can the fire button be held down to fire automatically?")] public bool automatic = true;
-		//TODO: implement critical hits
+		[Tooltip("Chance of critical strikes (0 = disabled)")] [Range(0, 100)] public int criticalChance;
+		[Tooltip("Percentage of the original damage to deal upon critical strikes (x = 100% + x damage)")] [Min(0)] public int criticalDamage;
 
 		[Header("Projectile")]
 		public Transform projectilePrefab;
@@ -39,10 +40,25 @@ namespace Kevlaris.Weapons
 			}
 			Transform projectileTransform = Instantiate(projectilePrefab, position, Quaternion.identity);
 			Projectile projectile = projectileTransform.GetComponent<Projectile>();
-			projectile.Initialise(direction, projectileSpeed, damage);
+			projectile.Initialise(direction, projectileSpeed, this);
 			projectileTransform.rotation = Quaternion.Euler(0, 0, angle);
 			roundsUsed++;
 			hand.StartCoroutine(hand.FireCooldown(fireRate));
+		}
+
+		public void OnPlayerHit(PlayerController player)
+		{
+			int dmg = damage;
+			if (criticalChance > 0)
+			{
+				float rnd = Random.Range(0f, 100f);
+				if (rnd < criticalChance)
+				{
+					dmg *= 1 + (criticalDamage / 100);
+					Debug.Log("Critical hit for " + dmg + " damage");
+				}
+			}
+			player.Damage(dmg);
 		}
 	}
 }

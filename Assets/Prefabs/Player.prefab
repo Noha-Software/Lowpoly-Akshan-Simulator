@@ -190,6 +190,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
+  controlled: 1
   speed: 30
   jumpPower: 7
   fallMultiplier: 2.5
@@ -201,6 +202,7 @@ MonoBehaviour:
   damping: 20
   weapon: {fileID: 11400000, guid: 12e89571eec1fed43a746b413938ab0b, type: 2}
   maxHealth: 100
+  healthBar: {fileID: 0}
 --- !u!114 &8704329113676568758
 MonoBehaviour:
   m_ObjectHideFlags: 0

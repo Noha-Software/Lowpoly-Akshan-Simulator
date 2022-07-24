@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] Transform groundCollider;
 	[SerializeField] LayerMask groundLayer;
 	const float groundCheckRadius = 0.2f;
+	[SerializeField] bool controlled = true;
 
 	[Header("Movement")]
 	[SerializeField] float speed = 30f;
@@ -50,15 +51,21 @@ public class PlayerController : MonoBehaviour
 		//Get 2D RigidBody and Animator
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
-		grapple = GetComponent<Grapple>();
 
-		hand.SetWeapon(weapon);
+		Health = maxHealth;
+
 		healthBar.Initialise(Color.white, Color.red, maxHealth);
 		healthBar.SetValue(maxHealth);
+
+		if (!controlled) return;
+
+		grapple = GetComponent<Grapple>();
+		hand.SetWeapon(weapon);
 	}
 
 	void FixedUpdate()
 	{
+		if (!controlled) return;
 		if (!isPaused)
 		{
 			GetInputs();

@@ -7,14 +7,14 @@ namespace Kevlaris.Weapons
 	{
 		Vector3 direction;
 		float speed;
-		int damage;
+		Weapon weapon;
 		bool init;
 		Collider2D trigger;
-		public void Initialise(Vector3 direction, float speed, int damage)
+		public void Initialise(Vector3 direction, float speed, Weapon weapon)
 		{
 			this.direction = direction;
 			this.speed = speed;
-			this.damage = damage;
+			this.weapon = weapon;
 			StartCoroutine(BulletTimeout());
 			init = true;
 			trigger = GetComponent<Collider2D>();
@@ -39,9 +39,8 @@ namespace Kevlaris.Weapons
 			if (player != null)
 			{
 				Debug.Log("Player hit!");
-				player.Damage(damage);
+				weapon.OnPlayerHit(player);
 			}
-
 			Destroy(gameObject);
 		}
 	}
