@@ -19,9 +19,9 @@ MonoBehaviour:
   fireRate: 360
   magazineSize: 12
   reloadRate: 1
-  automatic: 0
+  automatic: 1
   projectilePrefab: {fileID: 8727579417451963477, guid: ab67cbf1314de7a40b5dde9cef1fbe6b, type: 3}
   projectileSpeed: 20
   muzzleType: 1
   canShoot: 1
-  roundsUsed: 10
+  roundsUsed: 4

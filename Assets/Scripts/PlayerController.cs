@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Kevlaris.UI;
+using Kevlaris.Weapons;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -31,6 +33,7 @@ public class PlayerController : MonoBehaviour
 	[Header("Other")]
 	[SerializeField] Weapon weapon;
 	[SerializeField] int maxHealth = 100;
+	[SerializeField] ProgressBar healthBar;
 	bool isGrounded = false;
 	bool coyoteJump;
 	bool isPaused;
@@ -50,6 +53,8 @@ public class PlayerController : MonoBehaviour
 		grapple = GetComponent<Grapple>();
 
 		hand.SetWeapon(weapon);
+		healthBar.Initialise(Color.white, Color.red, maxHealth);
+		healthBar.SetValue(maxHealth);
 	}
 
 	void FixedUpdate()
@@ -81,7 +86,7 @@ public class PlayerController : MonoBehaviour
 			hand.EquipWeapon();
 
 		if (Input.GetButtonDown("Unequip"))
-			Damage(maxHealth);
+			Damage(10);
 			//hand.UnequipWeapon();
 
 		if (!CanMove())
@@ -220,6 +225,7 @@ public class PlayerController : MonoBehaviour
 	public void Damage(int dmg)
 	{
 		Health -= dmg;
+		healthBar.SetValue(Health);
 		if (Health <= 0)
 			Die();
 	}
@@ -230,6 +236,7 @@ public class PlayerController : MonoBehaviour
 			Health = maxHealth;
 		else
 			Health += amount;
+		healthBar.SetValue(Health);
 	}
 
 	void Die()
@@ -242,6 +249,7 @@ public class PlayerController : MonoBehaviour
 	{
 		transform.position = Vector3.zero;
 		Health = maxHealth;
+		healthBar.SetValue(maxHealth);
 		hand.UnequipWeapon();
 	}
 

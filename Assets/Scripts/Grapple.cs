@@ -14,7 +14,7 @@ public class Grapple : MonoBehaviour
 
 	[Header("Rope")]
 	[SerializeField] LineRenderer lineRenderer;
-	[SerializeField] [Range(0,1)] [Tooltip("Length of rope compared to distance to grapple point")] float length = .7f;
+	[SerializeField] [Range(0, 1)] [Tooltip("Length of rope compared to distance to grapple point")] float length = .7f;
 	[SerializeField] bool launch = false;
 	[SerializeField] [Min(0)] float ropeLerpTime = .3f;
 	Vector3 grapplePoint;
@@ -27,13 +27,12 @@ public class Grapple : MonoBehaviour
 		player = GetComponent<PlayerController>();
 	}
 
-	
 	private void FixedUpdate()
 	{
 		if (Input.GetButtonDown("Fire2"))
 			ToggleGrapple();
 	}
-	
+
 	private void LateUpdate()
 	{
 		if (grappling)

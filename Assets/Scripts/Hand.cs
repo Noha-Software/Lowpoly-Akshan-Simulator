@@ -1,3 +1,4 @@
+using Kevlaris.Weapons;
 using System.Collections;
 using UnityEngine;
 
@@ -29,6 +30,7 @@ public class Hand : MonoBehaviour
 		CurrentWeapon = weapon;
 		WeaponName = CurrentWeapon.name;
 		isAutomatic = weapon.automatic;
+		CurrentWeapon.canShoot = true;
 		Debug.Log("You have set " + WeaponName + " as the current weapon");
 	}
 
@@ -49,6 +51,7 @@ public class Hand : MonoBehaviour
 			return;
 		spriteRenderer.sprite = CurrentWeapon.texture;
 		CurrentWeapon.roundsUsed = 0;
+		CurrentWeapon.canShoot = true;
 		equipped = true;
 		Debug.Log("You have equipped the current weapon.");
 	}
