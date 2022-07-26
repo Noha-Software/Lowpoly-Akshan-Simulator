@@ -193,7 +193,6 @@ GameObject:
   - component: {fileID: 6337112313477793065}
   - component: {fileID: 6337112313477793067}
   - component: {fileID: 6337112313477793071}
-  - component: {fileID: 2720110552228699451}
   - component: {fileID: 6337112313477793062}
   - component: {fileID: 6337112313477793063}
   - component: {fileID: 6337112313477793066}
@@ -312,13 +311,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6337112313477793060}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29e8ab706c7ffc04eae2b3e936d6b3ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   grappling: 0
-  canGrapple: 1
+  canGrapple: 0
   targetAll: 0
   targetLayer:
     serializedVersion: 2
@@ -328,18 +327,6 @@ MonoBehaviour:
   length: 0.7
   launch: 1
   ropeLerpTime: 0.2
---- !u!114 &2720110552228699451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6337112313477793060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eff10908868392744b955d597a87d4b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!58 &6337112313477793062
 CircleCollider2D:
   m_ObjectHideFlags: 0
