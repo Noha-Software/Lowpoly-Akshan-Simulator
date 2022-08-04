@@ -1,24 +1,30 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
 public class CameraScript : MonoBehaviour
 {
-    Camera cam;
+	[SerializeField] Camera playerCamera;
+	[SerializeField] PhotonView playerView;
 
 	private void Awake()
 	{
-        cam = Camera.main;
+		if (playerCamera == null)
+			playerCamera = Camera.main;
+		if (playerView == null)
+			playerView = transform.GetComponent<PhotonView>();
 	}
 
 	void FixedUpdate()
-    {
-        Follow();
-    }
+	{
+		if (!playerView.IsMine) return;
+		Follow();
+	}
 
-    void Follow()
-    {
-        Vector3 pos = cam.transform.position;
-        pos.x = transform.position.x;
-        pos.y = transform.position.y;
-        cam.transform.position = pos;
-    }
+	void Follow()
+	{
+		Vector3 pos = playerCamera.transform.position;
+		pos.x = playerView.transform.position.x;
+		pos.y = playerView.transform.position.y;
+		playerCamera.transform.position = pos;
+	}
 }

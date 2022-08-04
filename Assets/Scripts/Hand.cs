@@ -1,4 +1,5 @@
 using Kevlaris.Weapons;
+using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 
@@ -6,9 +7,9 @@ public class Hand : MonoBehaviour
 {
 	public Weapon CurrentWeapon;
 	public string WeaponName;
-	[SerializeField] Sprite arrowSprite;
+	public Sprite arrowSprite;
 	Transform weaponHolder;
-	SpriteRenderer spriteRenderer;
+	PhotonView playerView;
 
 	bool equipped = false;
 	public bool isAutomatic;
@@ -22,7 +23,7 @@ public class Hand : MonoBehaviour
 	private void Awake()
 	{
 		weaponHolder = transform.GetChild(0);
-		spriteRenderer = weaponHolder.GetComponent<SpriteRenderer>();
+		playerView = transform.parent.GetComponent<PhotonView>();
 	}
 
 	public void SetWeapon(Weapon weapon)
@@ -36,7 +37,7 @@ public class Hand : MonoBehaviour
 
 	public void RemoveWeapon()
 	{
-		if (CurrentWeapon == null)
+		if (CurrentWeapon == null || !playerView.IsMine)
 			return;
 		UnequipWeapon();
 		CurrentWeapon = null;
@@ -47,9 +48,9 @@ public class Hand : MonoBehaviour
 
 	public void EquipWeapon()
 	{
-		if (CurrentWeapon == null || equipped)
+		if (CurrentWeapon == null || equipped || !playerView.IsMine)
 			return;
-		spriteRenderer.sprite = CurrentWeapon.texture;
+		playerView.RPC("changeWeaponSprite", RpcTarget.AllBuffered);
 		CurrentWeapon.roundsUsed = 0;
 		CurrentWeapon.canShoot = true;
 		equipped = true;
@@ -58,16 +59,16 @@ public class Hand : MonoBehaviour
 
 	public void UnequipWeapon()
 	{
-		if (CurrentWeapon == null || !equipped)
+		if (CurrentWeapon == null || !equipped || !playerView.IsMine)
 			return;
-		spriteRenderer.sprite = arrowSprite;
+		playerView.RPC("setDefaultSprite", RpcTarget.AllBuffered);
 		equipped = false;
 		Debug.Log("You have unequipped the current weapon.");
 	}
 
 	public void FireWeapon()
 	{
-		if (CurrentWeapon == null || !equipped)
+		if (CurrentWeapon == null || !equipped || !playerView.IsMine)
 			return;
 
 		Vector2 shootPoint;

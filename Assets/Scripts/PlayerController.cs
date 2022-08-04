@@ -2,6 +2,8 @@
 using UnityEngine;
 using Kevlaris.UI;
 using Kevlaris.Weapons;
+using Photon.Pun;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -10,6 +12,9 @@ public class PlayerController : MonoBehaviour
 	Animator animator;
 	Grapple grapple;
 	SpriteRenderer spriteRenderer;
+
+	// Network
+	PhotonView view;
 
 	[Header("Detection")]
 	[SerializeField] Collider2D standingCollider;
@@ -35,7 +40,7 @@ public class PlayerController : MonoBehaviour
 	[Header("Other")]
 	[SerializeField] Weapon weapon;
 	[SerializeField] int maxHealth = 100;
-	[SerializeField] ProgressBar healthBar;
+	//[SerializeField] ProgressBar healthBar;
 	bool isGrounded = false;
 	bool coyoteJump;
 	bool isPaused;
@@ -48,18 +53,29 @@ public class PlayerController : MonoBehaviour
 		isPaused = !focus;
 	}
 
-	void Awake()
+	void Start()
 	{
 		//Get 2D RigidBody and Animator
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
 
-		Health = maxHealth;
-		originalColor = spriteRenderer.color;
+		view = GetComponent<PhotonView>();
 
-		healthBar.Initialise(Color.white, Color.red, maxHealth);
-		healthBar.SetValue(maxHealth);
+		Health = maxHealth;
+
+		/*
+		originalColor = spriteRenderer.color;
+		Canvas hud = new GameObject("HUD").AddComponent<Canvas>();
+		hud.transform.position = Vector3.zero;
+		hud.renderMode = RenderMode.ScreenSpaceOverlay;
+		CanvasScaler hudScaler = hud.gameObject.AddComponent<CanvasScaler>();
+		hudScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+		hudScaler.referenceResolution = new Vector2(1920, 1080);
+
+		healthBar = new ProgressBar(hud.transform, Color.white, Color.red, maxHealth);
+		healthBar.SetValue(maxHealth);		
+		*/
 
 		if (!controlled) return;
 
@@ -70,7 +86,7 @@ public class PlayerController : MonoBehaviour
 	void FixedUpdate()
 	{
 		if (!controlled) return;
-		if (!isPaused)
+		if (!isPaused && view.IsMine)
 		{
 			GetInputs();
 			Move(horizontalValue);
@@ -97,7 +113,8 @@ public class PlayerController : MonoBehaviour
 			hand.EquipWeapon();
 
 		if (Input.GetButtonDown("Unequip"))
-			hand.UnequipWeapon();
+			Damage(maxHealth / 5);
+			//hand.UnequipWeapon();
 
 		if (!CanMove())
 		{
@@ -105,9 +122,12 @@ public class PlayerController : MonoBehaviour
 			return;
 		}
 
-		//Set animator's Y velocity
-		animator.SetFloat("YVelocity", rb.velocity.y);
-
+		if (animate)
+		{
+			//Set animator's Y velocity
+			animator.SetFloat("YVelocity", rb.velocity.y);
+		}
+		
 		horizontalValue = Input.GetAxisRaw("Horizontal");
 
 		if (Input.GetButtonDown("Jump"))
@@ -132,9 +152,14 @@ public class PlayerController : MonoBehaviour
 	public bool CanMove()
 	{
 		bool can = true;
-		if (grapple.grappling)
-			can = false;
-
+		if (grapple != null)
+		{
+			if (grapple.grappling)
+			{
+				can = false;
+			}
+		}
+		
 		return can;
 	}
 
@@ -159,7 +184,8 @@ public class PlayerController : MonoBehaviour
 				StartCoroutine(CoyoteJumpDelay());
 		}
 
-		animator.SetBool("Jump", !isGrounded);
+		if (animate)
+			animator.SetBool("Jump", !isGrounded);
 	}
 
 	IEnumerator CoyoteJumpDelay()
@@ -175,7 +201,8 @@ public class PlayerController : MonoBehaviour
 		if (isGrounded)
 		{
 			rb.velocity = Vector2.up * jumpPower;
-			animator.SetBool("Jump", true);
+			if (animate)
+				animator.SetBool("Jump", true);
 		}
 		else
 		{
@@ -183,7 +210,8 @@ public class PlayerController : MonoBehaviour
 			if (coyoteJump)
 			{
 				rb.velocity = Vector2.up * jumpPower;
-				animator.SetBool("Jump", true);
+				if (animate)
+					animator.SetBool("Jump", true);
 			}
 		}
 	}
@@ -198,7 +226,8 @@ public class PlayerController : MonoBehaviour
 
 		// 0 = idle, 1 = walking, 2 = running
 		// set the animator float according to the absolute of velocity
-		animator.SetFloat("XVelocity", Mathf.Abs(rb.velocity.x));
+		if (animate)
+			animator.SetFloat("XVelocity", Mathf.Abs(rb.velocity.x));
 	}
 
 	/// <summary>
@@ -235,7 +264,7 @@ public class PlayerController : MonoBehaviour
 	public void Damage(int dmg)
 	{
 		Health -= dmg;
-		healthBar.SetValue(Health);
+		//healthBar.SetValue(Health);
 		StopCoroutine("Flash");
 		spriteRenderer.color = originalColor;
 		StartCoroutine(Flash(Color.red, .5f));
@@ -269,7 +298,7 @@ public class PlayerController : MonoBehaviour
 			Health = maxHealth;
 		else
 			Health += amount;
-		healthBar.SetValue(Health);
+		//healthBar.SetValue(Health);
 		StartCoroutine(Flash(Color.green, 1f));
 	}
 
@@ -287,7 +316,7 @@ public class PlayerController : MonoBehaviour
 		}
 		transform.position = Vector3.zero;
 		Health = maxHealth;
-		healthBar.SetValue(maxHealth);
+		//healthBar.SetValue(maxHealth);
 		hand.UnequipWeapon();
 	}
 
@@ -295,5 +324,17 @@ public class PlayerController : MonoBehaviour
 	{
 		Gizmos.color = Color.green;
 		Gizmos.DrawSphere(groundCollider.position, groundCheckRadius);
+	}
+
+	//Hand RPC's
+	[PunRPC]
+	void changeWeaponSprite()
+	{
+		hand.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = hand.CurrentWeapon.texture;
+	}
+	[PunRPC]
+	void setDefaultSprite()
+	{
+		hand.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = hand.arrowSprite;
 	}
 }

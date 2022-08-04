@@ -4,7 +4,9 @@ using UnityEngine.UI;
 
 namespace Kevlaris.UI
 {
-	public class ProgressBar : MonoBehaviour
+	[RequireComponent(typeof(Image))]
+	[RequireComponent(typeof(RectTransform))]
+	internal class Progress : MonoBehaviour
 	{
 		RectTransform progress;
 		Image progressImage;
@@ -14,7 +16,8 @@ namespace Kevlaris.UI
 		Gradient colors;
 		float lerpTime = .5f;
 		bool init = false;
-		public void Initialise(Color startColor, Color endColor, float maxValue, float lerpTime = .5f)
+
+		internal void Initialise(Color startColor, Color endColor, float maxValue, float lerpTime = .5f)
 		{
 			GradientColorKey startColorKey = new GradientColorKey(startColor, 1);
 			GradientColorKey endColorKey = new GradientColorKey(endColor, 0);
@@ -31,7 +34,7 @@ namespace Kevlaris.UI
 			gameObject.SetActive(true);
 			init = true;
 		}
-		public void Initialise(Gradient colors, float maxValue, float lerpTime = .5f)
+		internal void Initialise(Gradient colors, float maxValue, float lerpTime = .5f)
 		{
 			this.colors = colors;
 			this.maxValue = maxValue;
@@ -44,7 +47,7 @@ namespace Kevlaris.UI
 			init = true;
 		}
 
-		public void SetValue(float value)
+		internal void SetValue(float value)
 		{
 			if (!init) return;
 			if (value < 0)
@@ -68,9 +71,51 @@ namespace Kevlaris.UI
 			progressImage.color = colors.Evaluate(value / maxValue);
 		}
 
-		public float GetValue()
+		internal float GetValue()
 		{
 			return value;
+		}
+	}
+
+	public class ProgressBar
+	{
+		Progress progress;
+		bool init = false;
+
+		public ProgressBar(Transform parent, Color startColor, Color endColor, float maxValue, float lerpTime = .5f)
+		{
+			GameObject progressBarObj = new GameObject("ProgressBar"); // create background gameobject for progressbar
+			progressBarObj.transform.parent = parent;
+			Image progressBarImg = progressBarObj.AddComponent<Image>();
+			progressBarImg.color = new Color(180, 180, 180, 85); // #B4B4B4 with 85% transparency
+			GameObject progressObj = new GameObject("Progress"); // create actual progress gameobject
+			progressObj.transform.parent = progressObj.transform;
+			progress = progressObj.AddComponent<Progress>();
+			progress.Initialise(startColor, endColor, maxValue, lerpTime);
+			init = true;
+		}
+		public ProgressBar(Transform parent, Gradient colors, float maxValue, float lerpTime = .5f)
+		{
+			GameObject progressBarObj = new GameObject("ProgressBar"); // create background gameobject for progressbar
+			progressBarObj.transform.parent = parent;
+			Image progressBarImg = progressBarObj.AddComponent<Image>();
+			progressBarImg.color = new Color(180, 180, 180, 85); // #B4B4B4 with 85% transparency
+			GameObject progressObj = new GameObject("Progress"); // create actual progress gameobject
+			progressObj.transform.parent = progressObj.transform;
+			progress = progressObj.AddComponent<Progress>();
+			progress.Initialise(colors, maxValue, lerpTime);
+			init = true;
+		}
+
+		public void SetValue(float value)
+		{
+			if (!init) return;
+			progress.SetValue(value);
+		}
+		public float GetValue()
+		{
+			if (!init) return -1;
+			return progress.GetValue();
 		}
 	}
 }
